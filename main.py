@@ -17,7 +17,7 @@ else:
 # Play surface
 playSurface = pygame.display.set_mode((720, 460))
 pygame.display.set_caption('Snake game!')
-vibes = mixer.music.load("SKYBOX.mp3")
+vibes = mixer.music.load('assets/audio/SKYBOX.ogg')
 mixer.music.set_volume(0.3)
 
 # Colors

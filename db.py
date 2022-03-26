@@ -13,9 +13,6 @@ class Storage:
 			self.collection = mongod['snake_game']
 			# iF the user is an empty string we exit
 			self.user = user
-			# if self.user == "":
-				# print("[CONSOLE] Cannot pass empty strings, exiting...")
-			# else:
 			self.userInDb = [i for i in self.collection.find({}, {"name": 1}) if i.get('name') == self.user]
 
 			self.best_score = 0
@@ -29,7 +26,6 @@ class Storage:
 
 	def update(self, score):
 		curr_highscore = [score for score in self.collection.find({}, {"_id": 0, "best_score": 1}).sort("best_score", -1).limit(1)][0]
-		print(f'Current highscore: {curr_highscore}')
 		#Update the overall high score if it's lower than the current score
 		if score > curr_highscore['best_score']:
 			self.collection.update_one({"best_score": curr_highscore['best_score']}, {"$set":{'best_score': score, "lastSetBy": self.user}})
