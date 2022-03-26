@@ -2,7 +2,6 @@
 import pygame, sys, random, time
 from db import Storage
 from pygame import mixer
-# Import tkinter for the menu
 from tkinter import *
 
 # check for initializing errors
@@ -19,7 +18,7 @@ else:
 playSurface = pygame.display.set_mode((720, 460))
 pygame.display.set_caption('Snake game!')
 vibes = mixer.music.load("SKYBOX.mp3")
-mixer.music.set_volume(0.2)
+mixer.music.set_volume(0.3)
 
 # Colors
 red = pygame.Color(255, 0, 0) # gameover
@@ -46,12 +45,37 @@ changeto = direction
 score = 0
 
 def register_user():
-	name = input("What is your name: ")
-	while name == "":
-		name = input("Please enter a name: ")
-	else:
+	# Create a Tkinter object
+	root = Tk()
+	root.geometry("180x180+720+260")
+	root.resizable(0,0)
+
+	name_label = Label(root, text="Name: ")
+	name_label.grid(row=0, column=0)
+	name_textbox = Entry(root)
+	name_textbox.grid(row=0, column=1)
+
+
+	def get_name_and_close():
+		global name
+		name = name_textbox.get()
+		# prompt the user to reenter the name if the name is empty
+		if name == "":
+			name_textbox.delete(0, END)
+			name_textbox.insert(0, "Please enter your name!")
+			name_textbox.config(fg="red")
+			name_textbox.focus()
+			name = name_textbox.get()
+		root.destroy()
 		return name
 
+	reg_btn = Button(root, text="Register", command=get_name_and_close, background="green", foreground="white")
+	reg_btn.grid(row=1, column=1)
+
+	# Run the mainloop
+	# root.overrideredirect(True)
+	root.mainloop()
+	return name
 
 # Game over function
 def gameOver():
@@ -61,8 +85,8 @@ def gameOver():
 	GOsurf = myFont.render('Game over!', True, red)
 	GOrect = GOsurf.get_rect()
 	
-	
-	user_db = Storage(name)
+	print(f'Name: {user}')
+	user_db = Storage(user)
 	user_db.update(score)
 	hi_score = user_db.read_highscore()	
 
@@ -117,10 +141,10 @@ def drawWithLines():
 
 
 
-name = register_user()
+user = register_user()
 paused = False
 started = True
-# mixer.music.play(-1)
+mixer.music.play(-1)
 # Main Logic of the game
 while started:
 	for event in pygame.event.get():
