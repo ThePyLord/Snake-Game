@@ -1,6 +1,6 @@
 # our game imports
 import pygame, sys, random, time
-import db
+from db import Storage
 from pygame import mixer
 # Import tkinter for the menu
 from tkinter import *
@@ -53,20 +53,6 @@ def register_user():
 		return name
 
 
-""" Gotta refactor this to just use the mongo database """
-def new_highscore():
-	user_db = db.Storage(name)
-
-	user_db.update(score)
-	# if int(highscore) < score:
-		# f = open('data.txt', 'w')
-		# f.write(str(score))
-		# highscore = int(score)
-		# user_db.update(score)
-		# f.close()
-	# else:
-		# user_db.update(score=score)
-
 # Game over function
 def gameOver():
 	global started
@@ -74,10 +60,13 @@ def gameOver():
 	HOFont = pygame.font.SysFont('Arial', 30)
 	GOsurf = myFont.render('Game over!', True, red)
 	GOrect = GOsurf.get_rect()
-	new_highscore()
+	
+	
+	user_db = Storage(name)
+	user_db.update(score)
+	hi_score = user_db.read_highscore()	
 
-	hi_score = db.Storage.read_highscore()	
-	HOsurf = HOFont.render(f"The overall highscore is: {hi_score['high_score']} was last set by {hi_score['set_by']}", True, gold)
+	HOsurf = HOFont.render(f"The overall highscore is: {hi_score['best_score']} was last set by {hi_score['set_by']}", True, gold)
 	HOrect = HOsurf.get_rect()
 
 	GOrect.midtop = (360, 15)
@@ -131,7 +120,7 @@ def drawWithLines():
 name = register_user()
 paused = False
 started = True
-mixer.music.play(-1)
+# mixer.music.play(-1)
 # Main Logic of the game
 while started:
 	for event in pygame.event.get():
