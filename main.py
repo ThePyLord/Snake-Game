@@ -1,6 +1,7 @@
 # our game imports
 import pygame, sys, random, time
 from db import Storage
+import menu
 from pygame import mixer
 from tkinter import *
 
@@ -98,6 +99,7 @@ def gameOver():
 	playSurface.blit(HOsurf, HOrect)
 	showScore(0)
 	pygame.display.flip()
+	menu.draw_menu()
 	mixer.music.stop()
 	time.sleep(4)
 	pygame.quit() #pygame exit
@@ -137,11 +139,11 @@ def drawWithLines():
 				pygame.draw.line(playSurface, black, (0, j),(playSurface.get_width(), j)) # Horizontal line
 
 
-
+menu = menu.Menu()
 user = register_user()
 paused = False
 started = True
-mixer.music.play(-1)
+# mixer.music.play(-1)
 # Main Logic of the game
 while started:
 	for event in pygame.event.get():
@@ -159,8 +161,9 @@ while started:
 				changeto = 'DOWN' 
 			if event.key == pygame.K_p or event.key == ord('p'):
 				paused = not paused
-				snakePos[0] = -snakePos[0]
-				snakePos[1] = -snakePos[1]
+				# snakePos[0] = -snakePos[0]
+				# snakePos[1] = -snakePos[1]
+				# menu.draw_menu()
 				print("Pressed pause", snakePos)
 			if event.key == pygame.K_ESCAPE:
 				pygame.event.post(pygame.event.Event(pygame.QUIT))
