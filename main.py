@@ -17,7 +17,7 @@ else:
 # Play surface
 playSurface = pygame.display.set_mode((720, 460))
 pygame.display.set_caption('Snake game!')
-vibes = mixer.music.load('assets/audio/SKYBOX.ogg')
+vibes = mixer.music.load('./assets/audio/SKYBOX.ogg')
 mixer.music.set_volume(0.3)
 
 # Colors
@@ -73,7 +73,6 @@ def register_user():
 	reg_btn.grid(row=1, column=1)
 
 	# Run the mainloop
-	# root.overrideredirect(True)
 	root.mainloop()
 	return name
 
@@ -85,7 +84,6 @@ def gameOver():
 	GOsurf = myFont.render('Game over!', True, red)
 	GOrect = GOsurf.get_rect()
 	
-	print(f'Name: {user}')
 	user_db = Storage(user)
 	user_db.update(score)
 	hi_score = user_db.read_highscore()	
@@ -137,7 +135,6 @@ def drawWithLines():
 			else:
 				pygame.draw.line(playSurface, black, (i, j),(i, j - SNAKE_WIDTH))
 				pygame.draw.line(playSurface, black, (0, j),(playSurface.get_width(), j)) # Horizontal line
-
 
 
 

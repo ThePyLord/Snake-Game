@@ -17,7 +17,7 @@ class Storage:
 
 			self.best_score = 0
 			if len(self.userInDb) >= 1 and self.userInDb[0]['name'] :
-				print("User already exists")
+				# print("User already exists")
 				self.best_score = [i for i in self.collection.find({"name": user})][0]['best_score']
 			else:
 				self.collection.insert_one({"name": user, "best_score": 0})
@@ -33,12 +33,12 @@ class Storage:
 				self.collection.update_one({"name": self.user}, {"$set": {"best_score": score}})
 			print(f'Updated by {self.user}')
 		else:
-			print("You tried, hopefully you beat your own score")
+			# print("You tried, hopefully you beat your own score")
 			if score > self.best_score:
 				print(f'You beat your own score {self.best_score} by {score - self.best_score}')
 				self.collection.update_one({"name": self.user}, {"$set": {"best_score": score}})
-			else:
-				print("Can't succeed? Try again.")
+
+			# print("Can't succeed? Try again.")
 	
 
 	def read_highscore(self):
