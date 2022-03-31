@@ -5,7 +5,7 @@ load_dotenv()
 
 
 class Storage:
-	def __init__(self, user):
+	def __init__(self, user: str):
 		try:
 			client = pymongo.MongoClient(os.getenv("MONGO_URI"))
 			print("[CONSOLE] Successfully connected to the database")
@@ -15,7 +15,7 @@ class Storage:
 			self.user = user
 			self.userInDb = [i for i in self.collection.find({}, {"name": 1}) if i.get('name') == self.user]
 
-			self.best_score = 0
+			self.best_score: int = 0
 			if len(self.userInDb) >= 1 and self.userInDb[0]['name'] :
 				# print("User already exists")
 				self.best_score = [i for i in self.collection.find({"name": user})][0]['best_score']

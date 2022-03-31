@@ -99,7 +99,6 @@ def gameOver():
 	playSurface.blit(HOsurf, HOrect)
 	showScore(0)
 	pygame.display.flip()
-	menu.draw_menu()
 	mixer.music.stop()
 	time.sleep(4)
 	pygame.quit() #pygame exit
@@ -123,7 +122,7 @@ def drawGrid():
 	for i in range(0, playSurface.get_width() // SNAKE_WIDTH):
 		for j in range(0, playSurface.get_height() // SNAKE_WIDTH):
 			rect = pygame.Rect(i*SNAKE_WIDTH, j*SNAKE_WIDTH, SNAKE_WIDTH, SNAKE_WIDTH)
-			pygame.draw.rect(playSurface, black, rect, 1)
+			pygame.draw.rect(playSurface, (190,190,190), rect, 1)
 
 
 # Time complexity: O(n)
@@ -139,13 +138,17 @@ def drawWithLines():
 				pygame.draw.line(playSurface, black, (0, j),(playSurface.get_width(), j)) # Horizontal line
 
 
-menu = menu.Menu()
+muted = False
+m = menu.Menu()
+play_button = menu.Button(playSurface, 'Play', (300, 200), (200, 50), (170, 201, 241))
+m.draw_menu()
+play_button.draw()
 user = register_user()
-paused = False
+paused = True
 started = True
-# mixer.music.play(-1)
+mixer.music.play(-1)
 # Main Logic of the game
-while started:
+while True:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			pygame.quit()
@@ -159,74 +162,87 @@ while started:
 				changeto = 'UP' 
 			if event.key == pygame.K_DOWN or event.key == ord('s'):
 				changeto = 'DOWN' 
+			if event.key == pygame.K_m or event.key == ord('m'):
+				if not muted:
+					muted = True
+					mixer.music.set_volume(0)
+				else:
+					muted = False
+					mixer.music.set_volume(0.3)
+
 			if event.key == pygame.K_p or event.key == ord('p'):
 				paused = not paused
-				# snakePos[0] = -snakePos[0]
-				# snakePos[1] = -snakePos[1]
-				# menu.draw_menu()
-				print("Pressed pause", snakePos)
+				# play_button.draw(True)
+				if paused:
+					mixer.music.pause()
+					m.draw_menu()
+					play_button.draw()
+				else:
+					mixer.music.unpause()
 			if event.key == pygame.K_ESCAPE:
 				pygame.event.post(pygame.event.Event(pygame.QUIT))
 
-	# validation of direction
-	if changeto == 'RIGHT' and not direction == 'LEFT':
-		direction = 'RIGHT'
-	if changeto == 'LEFT' and not direction == 'RIGHT':
-		direction = 'LEFT'
-	if changeto == 'UP' and not direction == 'DOWN':
-		direction = 'UP'
-	if changeto == 'DOWN' and not direction == 'UP':
-		direction = 'DOWN'
+	if not paused:
+		# validation of direction
+		if changeto == 'RIGHT' and not direction == 'LEFT':
+			direction = 'RIGHT'
+		if changeto == 'LEFT' and not direction == 'RIGHT':
+			direction = 'LEFT'
+		if changeto == 'UP' and not direction == 'DOWN':
+			direction = 'UP'
+		if changeto == 'DOWN' and not direction == 'UP':
+			direction = 'DOWN'
 
-	# Update snake position [x,y]
-	if direction == 'RIGHT':
-		snakePos[0] += 10
-	if direction == 'LEFT':
-		snakePos[0] -= 10
-	if direction == 'UP':
-		snakePos[1] -= 10
-	if direction == 'DOWN':
-		snakePos[1] += 10
-	
-	
-	# Snake body mechanism
-	snakeBody.insert(0, list(snakePos))
-	if (snakePos[0] == foodPos[0] and snakePos[1] == foodPos[1]):
-		score += 1
-		foodSpawn = False
-	else:
-		snakeBody.pop()
+		# Update snake position [x,y]
+		if direction == 'RIGHT':
+			snakePos[0] += 10
+		if direction == 'LEFT':
+			snakePos[0] -= 10
+		if direction == 'UP':
+			snakePos[1] -= 10
+		if direction == 'DOWN':
+			snakePos[1] += 10
 		
-	#Food Spawn
-	if foodSpawn == False:
-		foodPos = [random.randrange(1,72)*10,random.randrange(1,46)*10] 
-	foodSpawn = True
-	
-	#Background
-	playSurface.fill(white)
-	drawWithLines()
-
-
-	#Draw Snake 
-	for pos in snakeBody:
-		pygame.draw.rect(playSurface, green, pygame.Rect(pos[0],pos[1],10,10))
-	
-	pygame.draw.rect(playSurface, brown, pygame.Rect(foodPos[0], foodPos[1],10,10))
-	
-	# Bound
-	if snakePos[0] > 710 or snakePos[0] < 0:
-		gameOver()
-	if snakePos[1] > 450 or snakePos[1] < 0:
-		gameOver()
 		
-	# Self hit
-	for block in snakeBody[1:]:
-		if snakePos[0] == block[0] and snakePos[1] == block[1]:
+		# Snake body mechanism
+		snakeBody.insert(0, list(snakePos))
+		if (snakePos[0] == foodPos[0] and snakePos[1] == foodPos[1]):
+			score += 1
+			foodSpawn = False
+		else:
+			snakeBody.pop()
+			
+		#Food Spawn
+		if foodSpawn == False:
+			foodPos = [random.randrange(1,72)*10,random.randrange(1,46)*10] 
+		foodSpawn = True
+		
+		#Background
+		playSurface.fill((202, 228, 241))
+		# drawWithLines()
+		drawGrid()
+
+
+		#Draw Snake 
+		for pos in snakeBody:
+			pygame.draw.rect(playSurface, green, pygame.Rect(pos[0],pos[1],10,10))
+		
+		pygame.draw.rect(playSurface, brown, pygame.Rect(foodPos[0], foodPos[1],10,10))
+		
+		# Bound
+		if snakePos[0] > 710 or snakePos[0] < 0:
 			gameOver()
-	
-	#common stuff
-	showScore()
-	pygame.display.flip()
-	
-	fpsController.tick(15)
+		if snakePos[1] > 450 or snakePos[1] < 0:
+			gameOver()
+			
+		# Self hit
+		for block in snakeBody[1:]:
+			if snakePos[0] == block[0] and snakePos[1] == block[1]:
+				gameOver()
+		
+		#common stuff
+		showScore()
 
+	pygame.display.flip()
+	fpsController.tick(15)
+	
